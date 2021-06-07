@@ -57,20 +57,3 @@ resource "helm_release" "deploy-github-actions-runner" {
   ]
   wait = true
 }
-
-resource "kubectl_manifest" "deploy-custom-resource-action-runner-pool" {
-  depends_on = [
-    helm_release.deploy-github-actions-runner
-  ]
-  yaml_body = <<YAML
-# runner.yaml
-apiVersion: actions.summerwind.dev/v1alpha1
-kind: Runner
-metadata:
-  name: example-runner
-spec:
-  repository: summerwind/actions-runner-controller
-  env: []
-
-YAML
-}

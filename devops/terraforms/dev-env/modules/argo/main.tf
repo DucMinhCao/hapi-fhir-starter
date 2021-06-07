@@ -1,7 +1,11 @@
 terraform {
+  required_version = ">= 0.13.3"
 
-  required_version = ">=0.14.0"
   required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.2.0"
+    }
     helm = {
       version = "2.1.2"
     }
@@ -9,11 +13,10 @@ terraform {
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
-# ArgoCD Resources
+# Create namespace to deploy Argo
 # ----------------------------------------------------------------------------------------------------------------------
-resource "helm_release" "deploy-traefik-controller" {
-  name    = "traefik"
-  chart   = "../../charts/open-emr-charts"
-  version = "0.1.0"
-  wait    = true
+resource "kubernetes_namespace" "argo-namespace" {
+  metadata {
+    name = var.argo_namespace
+  }
 }

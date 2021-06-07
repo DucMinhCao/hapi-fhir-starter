@@ -1,0 +1,45 @@
+
+name: Pull Request Coverage
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Step 1 - Get code
+        uses: actions/checkout@v2
+
+      - name: Step 2 - Set up JDK
+        uses: actions/setup-java@v2.1.0
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Step 3 - Test with profile coverage
+        id: unit-test
+        run: mvn test -P coverage
+
+      - name: Step 4 - Coverage minimum check
+        id: coverage-check
+        run: mvn verify -P coverage
+
+      - name: Step 5 - Coverage upload
+        id: coverage-upload
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./**/target/site/jacoco/jacoco.xml
+          name: codecov
+
+      - name: Step 6 - Slack
+        uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#workflow'
+        if: always()
