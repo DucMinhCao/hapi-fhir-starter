@@ -29,6 +29,9 @@
 		<coverage.minimum>0.50</coverage.minimum>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 		<jacoco-plugin.version>0.8.7</jacoco-plugin.version>
+		<flyway.version>7.9.2</flyway.version>
+		<junit.version>5.7.0</junit.version>
+		<mockito.version>3.8.0</mockito.version>
 	</properties>
 
 	<repositories>
@@ -143,6 +146,24 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-core</artifactId>
+				<version>${flyway.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -175,8 +196,8 @@
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>17</source>
-						<target>17</target>
+						<source>11</source>
+						<target>11</target>
 					</configuration>
 				</plugin>
 
@@ -243,6 +264,11 @@
 									</configuration>
 								</execution>
 							</executions>
+						</plugin>
+						<plugin>
+							<groupId>org.flywaydb</groupId>
+							<artifactId>flyway-maven-plugin</artifactId>
+							<version>${flyway.version}</version>
 						</plugin>
 					</plugins>
 				</pluginManagement>

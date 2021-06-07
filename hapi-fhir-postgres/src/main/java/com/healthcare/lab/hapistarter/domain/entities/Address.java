@@ -9,21 +9,22 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "address")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String city;
-    private String country;
-    private String state;
-    private String line;
-    private String postalCode;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  private String city;
+  private String country;
+  private String state;
+  private String line;
+  private String postalCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PatientEntity patientEntity;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private PatientEntity patientEntity;
 
 }

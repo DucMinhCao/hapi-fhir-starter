@@ -9,20 +9,21 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "name")
-@Setter @Getter
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Name {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String familyName;
-    private String givenName;
-    private String prefix;
-    private String use;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  private String familyName;
+  private String givenName;
+  private String prefix;
+  private String use;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PatientEntity patientEntity;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private PatientEntity patientEntity;
 
 }

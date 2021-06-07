@@ -24,6 +24,7 @@ spring:
     createSchemas: true
     group: true
     table: flyway_schema_history
+    baseline-on-migrate: true
   jpa:
     hibernate:
       ddl-auto: update

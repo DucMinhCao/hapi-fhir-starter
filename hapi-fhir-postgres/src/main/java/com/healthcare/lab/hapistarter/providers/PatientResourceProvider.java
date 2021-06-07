@@ -39,52 +39,68 @@ public class PatientResourceProvider implements IResourceProvider {
 
   private static final Logger log = LoggerFactory.getLogger(PatientResourceProvider.class);
 
+  public PatientResourceProvider() {
+
+  }
+
+  public PatientResourceProvider(
+      PatientRepository patientRepository,
+      PatientEntityToFHIRPatient patientEntityToFHIRPatient,
+      FHIRPatientToPatientEntity fhirPatientToPatientEntity) {
+    this.patientRepository = patientRepository;
+    this.patientEntityToFHIRPatient = patientEntityToFHIRPatient;
+    this.fhirPatientToPatientEntity = fhirPatientToPatientEntity;
+  }
+
   @Override
   public Class<Patient> getResourceType() {
-      return Patient.class;
+    return Patient.class;
   }
 
   @Create()
   public MethodOutcome createPatient(@ResourceParam Patient patient) {
     PatientEntity patientEntity = fhirPatientToPatientEntity.transform(patient);
-      var result = patientRepository.save(patientEntity);
-      return new MethodOutcome(new IdType(patientEntity.getId()), true);
+    var result = patientRepository.save(patientEntity);
+    return new MethodOutcome(new IdType(patientEntity.getId()), true);
   }
 
 
   @Read
   public Patient getPatientById(@IdParam IdType internalId) {
-      Long id = Long.valueOf(internalId.getIdPart());
-      PatientEntity patientEntity = new PatientEntity();
-      Optional<PatientEntity> optional = patientRepository.findById(id);
-        if (optional.isPresent()) {
-            patientEntity = optional.get();
-        }
-      return patientEntityToFHIRPatient.transform(patientEntity);
+    Long id = Long.valueOf(internalId.getIdPart());
+    PatientEntity patientEntity = new PatientEntity();
+    Optional<PatientEntity> optional = patientRepository.findById(id);
+    if (optional.isPresent()) {
+      patientEntity = optional.get();
+    }
+    return patientEntityToFHIRPatient.transform(patientEntity);
   }
 
   @Search
-  public List<Patient> searchByDob(@RequiredParam(name= Patient.SP_BIRTHDATE) DateParam birthDate) {
-      return patientRepository.findByDateOfBirth(birthDate.getValue())
-                              .stream()
-                              .map(item -> patientEntityToFHIRPatient.transform(item))
-                              .collect(Collectors.toList());
+  public List<Patient> searchByDob(
+      @RequiredParam(name = Patient.SP_BIRTHDATE) DateParam birthDate) {
+    return patientRepository.findByDateOfBirth(birthDate.getValue())
+        .stream()
+        .map(item -> patientEntityToFHIRPatient.transform(item))
+        .collect(Collectors.toList());
   }
 
 
   @Search
-  public List<Resource> searchByFamilyName(@RequiredParam(name = Patient.SP_FAMILY) StringParam familyName) {
-      return patientRepository.findByFamilyName(familyName.getValue())
-                              .stream()
-                              .map(item -> patientEntityToFHIRPatient.transform(item))
-                              .collect(Collectors.toList());
+  public List<Resource> searchByFamilyName(
+      @RequiredParam(name = Patient.SP_FAMILY) StringParam familyName) {
+    return patientRepository.findByFamilyName(familyName.getValue())
+        .stream()
+        .map(item -> patientEntityToFHIRPatient.transform(item))
+        .collect(Collectors.toList());
   }
 
   @Search
-  public List<Resource> searchByGivenName(@RequiredParam(name = Patient.SP_GIVEN) StringParam givenName) {
+  public List<Resource> searchByGivenName(
+      @RequiredParam(name = Patient.SP_GIVEN) StringParam givenName) {
     return patientRepository.findByGivenName(givenName.getValue())
-                            .stream()
-                            .map(item -> patientEntityToFHIRPatient.transform(item))
-                            .collect(Collectors.toList());
+        .stream()
+        .map(item -> patientEntityToFHIRPatient.transform(item))
+        .collect(Collectors.toList());
   }
 }
