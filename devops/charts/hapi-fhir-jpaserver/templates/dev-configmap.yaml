@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-config
+data:
+  config.yaml: |
+{{ .Values.configFiles.db_config_file_yaml | toYaml | indent 4 }}

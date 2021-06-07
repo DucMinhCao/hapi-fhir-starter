@@ -1,0 +1,320 @@
+# Default values for hapi-fhir-jpaserver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: hapiproject/hapi
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+spring:
+  datasource:
+    url: 'jdbc:postgresql://hapi-fhir-jpaserver-postgresql:5432/hapi_dstu3'
+    username: admin
+    password: admin
+    driverClassName: org.postgresql.Driver
+    max-active: 15
+    # database connection pool size
+    hikari:
+      maximum-pool-size: 10
+
+# ------- config values ----------
+
+configFiles:
+  db_config_file_yaml:
+    spring:
+      datasource:
+        url: 'jdbc:postgresql://hapi-fhir-jpaserver-postgresql:5432/hapi_dstu3'
+        username: admin
+        password: admin
+        driverClassName: org.postgresql.Driver
+        max-active: 15
+        # database connection pool size
+        hikari:
+          maximum-pool-size: 10
+      jpa:
+        properties:
+          hibernate.format_sql: false
+          hibernate.show_sql: false
+    #      hibernate.dialect: org.hibernate.dialect.h2dialect
+    #      hibernate.hbm2ddl.auto: update
+    #      hibernate.jdbc.batch_size: 20
+    #      hibernate.cache.use_query_cache: false
+    #      hibernate.cache.use_second_level_cache: false
+    #      hibernate.cache.use_structured_entries: false
+    #      hibernate.cache.use_minimal_puts: false
+    ###    These settings will enable fulltext search with lucene
+    #      hibernate.search.enabled: true
+    #      hibernate.search.backend.type: lucene
+    #      hibernate.search.backend.analysis.configurer: ca.uhn.fhir.jpa.search.HapiLuceneAnalysisConfigurer
+    #      hibernate.search.backend.directory.type: local-filesystem
+    #      hibernate.search.backend.directory.root: target/lucenefiles
+    #      hibernate.search.backend.lucene_version: lucene_current
+      batch:
+        job:
+          enabled: false
+    hapi:
+      fhir:
+        ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
+        fhir_version: R4
+    ### enable to use the ApacheProxyAddressStrategy which uses X-Forwarded-* headers
+    ### to determine the FHIR server address
+    #   use_apache_address_strategy: false
+    ### forces the use of the https:// protocol for the returned server address.
+    ### alternatively, it may be set using the X-Forwarded-Proto header.
+    #   use_apache_address_strategy_https: false
+    ### enable to set the Server URL
+    #    server_address: http://hapi.fhir.org/baseR4
+    #    defer_indexing_for_codesystems_of_size: 101
+    #    implementationguides:
+    ###    example from registry (packages.fhir.org)
+    #      swiss:
+    #        name: swiss.mednet.fhir
+    #        version: 0.8.0
+    #      example not from registry
+    #      ips_1_0_0:
+    #        url: https://build.fhir.org/ig/HL7/fhir-ips/package.tgz
+    #        name: hl7.fhir.uv.ips
+    #        version: 1.0.0
+    #    supported_resource_types:
+    #      - Patient
+    #      - Observation
+    #    allow_cascading_deletes: true
+    #    allow_contains_searches: true
+    #    allow_external_references: true
+    #    allow_multiple_delete: true
+    #    allow_override_default_search_params: true
+    #    auto_create_placeholder_reference_targets: false
+    #    cql_enabled: true
+    #    default_encoding: JSON
+    #    default_pretty_print: true
+    #    default_page_size: 20
+    #    enable_repository_validating_interceptor: false
+    #    enable_index_missing_fields: false
+    #    enable_index_contained_resource: false
+    #    enforce_referential_integrity_on_delete: false
+    #    enforce_referential_integrity_on_write: false
+    #    etag_support_enabled: true
+    #    expunge_enabled: true
+    #    daoconfig_client_id_strategy: null
+    #    client_id_strategy: ALPHANUMERIC
+    #    fhirpath_interceptor_enabled: false
+    #    filter_search_enabled: true
+    #    graphql_enabled: true
+    #    narrative_enabled: true
+    #    partitioning:
+    #      allow_references_across_partitions: false
+    #      partitioning_include_in_search_hashes: false
+        cors:
+          allow_Credentials: true
+          # These are allowed_origin patterns, see: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html#setAllowedOriginPatterns-java.util.List-
+          allowed_origin:
+            - '*'
+
+        # Search coordinator thread pool sizes
+        search-coord-core-pool-size: 20
+        search-coord-max-pool-size: 100
+        search-coord-queue-capacity: 200
+
+    #    logger:
+    #      error_format: 'ERROR - ${requestVerb} ${requestUrl}'
+    #      format: >-
+    #        Path[${servletPath}] Source[${requestHeader.x-forwarded-for}]
+    #        Operation[${operationType} ${operationName} ${idOrResourceName}]
+    #        UA[${requestHeader.user-agent}] Params[${requestParameters}]
+    #        ResponseEncoding[${responseEncodingNoDefault}]
+    #      log_exceptions: true
+    #      name: fhirtest.access
+    #    max_binary_size: 104857600
+    #    max_page_size: 200
+    #    retain_cached_searches_mins: 60
+    #    reuse_cached_search_results_millis: 60000
+        tester:
+            home:
+              name: Local Tester
+              server_address: 'http://localhost:8080/fhir'
+              refuse_to_fetch_third_party_urls: false
+              fhir_version: R4
+            global:
+              name: Global Tester
+              server_address: "http://hapi.fhir.org/baseR4"
+              refuse_to_fetch_third_party_urls: false
+              fhir_version: R4
+    #    validation:
+    #      requests_enabled: true
+    #      responses_enabled: true
+    #    binary_storage_enabled: true
+    #    bulk_export_enabled: true
+    #    subscription:
+    #      resthook_enabled: false
+    #      websocket_enabled: false
+    #      email:
+    #        from: some@test.com
+    #        host: google.com
+    #        port:
+    #        username:
+    #        password:
+    #        auth:
+    #        startTlsEnable:
+    #        startTlsRequired:
+    #        quitWait:
+    #    lastn_enabled: true
+    ###  This is configuration for normalized quantity serach level default is 0
+    ###   0: NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED - default
+    ###   1: NORMALIZED_QUANTITY_STORAGE_SUPPORTED
+    ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
+    #    normalized_quantity_search_level: 2
+    #elasticsearch:
+    #  debug:
+    #    pretty_print_json_log: false
+    #    refresh_after_write: false
+    #  enabled: false
+    #  password: SomePassword
+    #  required_index_status: YELLOW
+    #  rest_url: 'localhost:9200'
+    #  protocol: 'http'
+    #  schema_management_strategy: CREATE
+    #  username: SomeUsername
+
+# -------------------------------------------------
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "hapi-fhir-jpaserver"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8090
+
+ingress:
+  enabled: false
+  annotations: 
+    kubernetes.io/ingress.class: traefik
+  hosts:
+    - host: jpaserver.hapi.127.0.0.1.nip.io
+      paths:
+      - path: /
+        pathType: Prefix
+
+resources:
+  limits:
+    cpu: 512m
+    memory: 1Gi
+  requests:
+    cpu: 300m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+
+postgresql:
+  # enable an included PostgreSQL DB.
+  # if set to `false`, the values under `webApi.db` are used
+  enabled: true
+  # update the default Postgres version to 13.3
+  # name of the database to create
+  # see: <https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run>
+  nameOverride: ""
+  postgresqlUsername: admin
+  postgresqlDatabase: "hapi_dstu3"
+  postgresqlPassword: admin
+  port: 5432
+  volumePermissions:
+    enabled: true
+  audit:
+    logConnections: true
+    logDisconnections: true
+  # Name of existing secret to use for PostgreSQL passwords.
+  # The secret has to contain the keys `postgresql-password`
+  # which is the password for `postgresqlUsername` when it is
+  # different of `postgres`, `postgresql-postgres-password` which
+  # will override `postgresqlPassword`, `postgresql-replication-password`
+  # which will override `replication.password` and `postgresql-ldap-password`
+  # which will be sed to authenticate on LDAP. The value is evaluated as a template.
+  replication:
+    # should be true for production use
+    enabled: false
+    # number of read replicas
+    readReplicas: 1
+    # set synchronous commit mode: on, off, remote_apply, remote_write and local
+    synchronousCommit: "on"
+    # from the number of `readReplicas` defined above, set the number of those that will have synchronous replication
+    numSynchronousReplicas: 1
+  metrics:
+    # should also be true for production use
+    enabled: false
+    serviceMonitor:
+      # create a Prometheus Operator ServiceMonitor resource
+      enabled: false
+      # the labels used for Prometheus autodiscover, e.g. could be `release: prometheus`
+      additionalLabels: {}
+  containerSecurityContext: # +doc-gen:ignore
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+# readiness probe
+readinessProbe: # +doc-gen:ignore
+  failureThreshold: 5
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  successThreshold: 1
+  timeoutSeconds: 20
+# startup probe
+startupProbe: # +doc-gen:ignore
+  failureThreshold: 10
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 30
+
+# only used if `postgresql.enabeld=false`
+externalDatabase:
+  # Database host
+  host: localhost
+  # non-root Username for FHIR Database
+  user: fhir
+  # Database password
+  password: ""
+  # Name of an existing secret resource containing the DB password in a 'postgresql-password' key
+  existingSecret: ""
+  # Database name
+  database: hapi_dstu3
+  # Database port number
+  port: 5432
