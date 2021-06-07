@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   hapi-fhir-openemr:
-    image: thedemoland/hapi-fhir-postgres
+    image: thedemoland/hapi-fhir-openemr
     container_name: fhir-openemr
     ports:
       - "8081:8080"
