@@ -1,6 +1,7 @@
 package com.healthcare.lab.hapistarter.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.PreferReturnEnum;
 import ca.uhn.fhir.rest.openapi.OpenApiInterceptor;
@@ -9,15 +10,23 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ExceptionHandlingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseValidatingInterceptor;
+import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.ResultSeverityEnum;
 import com.healthcare.lab.hapistarter.providers.BundleResourceProvider;
 import com.healthcare.lab.hapistarter.providers.PatientResourceProvider;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
-
+import java.util.Arrays;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import java.util.Arrays;
+import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
+import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
 
 @WebServlet(urlPatterns = { "/postgres-r4/*" }, displayName = "FHIR Server")
 public class FHIRRestfulServer extends RestfulServer {
@@ -30,7 +39,8 @@ public class FHIRRestfulServer extends RestfulServer {
 
     @Override
     protected void initialize() throws ServletException {
-        setFhirContext(FhirContext.forR4());
+        FhirContext ctx = FhirContext.forR4();
+        setFhirContext(ctx);
 
         // General Configuration
         setCopyright("KMS Technology - Heathcare DC");
@@ -85,5 +95,25 @@ public class FHIRRestfulServer extends RestfulServer {
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         CorsInterceptor corsInterceptor = new CorsInterceptor(config);
         registerInterceptor(corsInterceptor);
+
+        ValidationSupportChain validationSupportChain = new ValidationSupportChain(
+            new DefaultProfileValidationSupport(ctx),
+            new CommonCodeSystemsTerminologyService(ctx)
+        );
+
+        FhirValidator validator = ctx.newValidator();
+        FhirInstanceValidator instanceValidator = new FhirInstanceValidator(validationSupportChain);
+        validator.registerValidatorModule(instanceValidator);
+
+        RequestValidatingInterceptor requestInterceptor = new RequestValidatingInterceptor();
+        requestInterceptor.addValidatorModule(instanceValidator);
+
+        requestInterceptor.setFailOnSeverity(ResultSeverityEnum.ERROR);
+        requestInterceptor.setAddResponseHeaderOnSeverity(ResultSeverityEnum.INFORMATION);
+        requestInterceptor.setResponseHeaderValue("Validation on ${line}: ${message} ${severity}");
+        requestInterceptor.setResponseHeaderValueNoIssues("No issues detected");
+        requestInterceptor.setMaximumHeaderLength(5000);
+
+        registerInterceptor(requestInterceptor);
     }
 }

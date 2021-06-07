@@ -62,6 +62,13 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-cql</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-schematron</artifactId>
+            <version>2.7.1</version>
+        </dependency>
+
         <!-- Spring-boot's dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
