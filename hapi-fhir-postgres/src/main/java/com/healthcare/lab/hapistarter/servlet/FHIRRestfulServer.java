@@ -20,6 +20,7 @@ import java.util.Arrays;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.springframework.context.ApplicationContext;
@@ -95,12 +96,14 @@ public class FHIRRestfulServer extends RestfulServer {
 
     ValidationSupportChain validationSupportChain = new ValidationSupportChain(
         new DefaultProfileValidationSupport(ctx),
+        new InMemoryTerminologyServerValidationSupport(ctx),
         new CommonCodeSystemsTerminologyService(ctx)
     );
 
     FhirValidator validator = ctx.newValidator();
-    FhirInstanceValidator instanceValidator = new FhirInstanceValidator(validationSupportChain);
+    FhirInstanceValidator instanceValidator = new FhirInstanceValidator(ctx);
     validator.registerValidatorModule(instanceValidator);
+    instanceValidator.setAnyExtensionsAllowed(true);
 
     RequestValidatingInterceptor requestInterceptor = new RequestValidatingInterceptor();
     requestInterceptor.addValidatorModule(instanceValidator);
