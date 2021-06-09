@@ -11,19 +11,20 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "telecom")
-@Setter @Getter
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Telecom {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String value;
-    private ContactPointSystem system;
-    private ContactPointUse use;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  private String value;
+  private ContactPointSystem system;
+  private ContactPointUse use;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PatientEntity patientEntity;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private PatientEntity patientEntity;
 
 }

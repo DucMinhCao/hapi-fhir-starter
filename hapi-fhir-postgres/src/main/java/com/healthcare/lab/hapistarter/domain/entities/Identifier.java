@@ -15,13 +15,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Identifier {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String system;
-    private String value;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  private String system;
+  private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PatientEntity patientEntity;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private PatientEntity patientEntity;
 
 }

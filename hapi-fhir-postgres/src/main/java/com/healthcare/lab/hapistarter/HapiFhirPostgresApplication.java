@@ -11,8 +11,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @ServletComponentScan
 public class HapiFhirPostgresApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(HapiFhirPostgresApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(HapiFhirPostgresApplication.class, args);
+  }
 }
