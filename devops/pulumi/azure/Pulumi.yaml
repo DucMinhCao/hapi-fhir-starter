@@ -1,0 +1,3 @@
+name: azure-healthcare-aks-
+runtime: nodejs
+description: Deploy a infrastructure for healthcare labs

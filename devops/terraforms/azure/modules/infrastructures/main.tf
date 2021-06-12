@@ -8,13 +8,17 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.1.2"
     }
-    kubernetes-alpha = {
-      source  = "hashicorp/kubernetes-alpha"
-      version = "0.4.1"
-    }
     null = {
       source  = "hashicorp/null"
       version = "3.1.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.1.0"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.11.1"
     }
   }
 }
@@ -38,17 +42,15 @@ variable "kubernetes" {
   })
 }
 
-variable "kube_config" {
+variable "domain" {
   type = string
 }
 
-
-provider "kubernetes-alpha" {
+provider "kubectl" {
   host                   = var.kubernetes.host
   client_key             = var.kubernetes.client_key
   client_certificate     = var.kubernetes.client_certificate
   cluster_ca_certificate = var.kubernetes.cluster_ca_certificate
-  config_path            = "${path.root}/kubeconfig"
 }
 
 provider "kubernetes" {
