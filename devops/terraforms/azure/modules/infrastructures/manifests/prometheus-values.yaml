@@ -7,16 +7,16 @@ grafana:
     ingressClassName: "nginx"
     enabled: true
     annotations:
-      "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+      "cert-manager.io/cluster-issuer": "letsencrypt-staging"
       "nginx.ingress.kubernetes.io/ssl-redirect": "true"
     hosts:
-      - grafana.ohmydev.asia
+      - monitoring.ohmydev.asia
     paths:
       - /
     tls:
-      - secretName: "grafana-ohmydev-asia"
+      - secretName: "monitoring-ohmydev-asia"
         hosts:
-          - "grafana.ohmydev.asia"
+          - "monitoring.ohmydev.asia"
   additionalDataSources:
     - name: loki-promtail
       basicAuth: false
@@ -43,15 +43,4 @@ grafana:
       scheme: http
       static_configs:
         - targets:
-            - nginx-ingress-prometheus.ingress.svc.cluster.local
-  dashboardProviders:
-    dashboardproviders.yaml:
-      apiVersion: 1
-      providers:
-        - name: "default"
-          orgId: 1
-          type: file
-          disableDeletion: false
-          editable: true
-          options:
-            path: /var/lib/grafana/dashboards/default
+            - http://nginx-ingress-prometheus.ingress.svc.cluster.local

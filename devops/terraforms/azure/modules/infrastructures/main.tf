@@ -51,6 +51,7 @@ provider "kubectl" {
   client_key             = var.kubernetes.client_key
   client_certificate     = var.kubernetes.client_certificate
   cluster_ca_certificate = var.kubernetes.cluster_ca_certificate
+  load_config_file       = false
 }
 
 provider "kubernetes" {
