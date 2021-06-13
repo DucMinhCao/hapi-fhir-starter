@@ -2,55 +2,22 @@
 resource "kubernetes_namespace" "nginx_ingress_namespace" {
   metadata {
     annotations = {
-      name = "ingress"
+      name = "nginx"
     }
-    name = "ingress"
+    name = "nginx"
   }
 }
 
 # Deploy Ingress Controller Traefik
-resource "helm_release" "deploy_nginx_ingress" {
-  name       = "nginx-ingress"
-  repository = "https://helm.nginx.com/stable"
-  chart      = "nginx-ingress"
+resource "helm_release" "deploy_nginx_ingress_controller" {
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
   namespace  = kubernetes_namespace.nginx_ingress_namespace.metadata[0].name
-  version    = "0.9.3"
+  version    = "3.33.0"
   wait       = true
 
-  set {
-    name  = "prometheus.create"
-    value = true
-  }
-  set {
-    name  = "prometheus.port"
-    value = 9901
-  }
-  set {
-    name  = "controller.enableLatencyMetrics"
-    value = true
-  }
-
-  set {
-    name  = "controller.setAsDefaultIngress"
-    value = true
-  }
-}
-resource "kubernetes_service" "create_prometheus_metrics_endpoint" {
-  metadata {
-    name      = "nginx-ingress-prometheus"
-    namespace = kubernetes_namespace.nginx_ingress_namespace.metadata[0].name
-  }
-  spec {
-    selector = {
-      app = "nginx-ingress-nginx-ingress"
-    }
-    port {
-      name        = "nginx-ingress-prometheus"
-      port        = 80
-      target_port = 9901
-    }
-    type = "ClusterIP"
-  }
+  values = [file("${path.module}/manifests/nginx-values.yaml")]
 }
 
 resource "kubernetes_ingress" "mock_ingress_to_get_ip" {
@@ -66,7 +33,7 @@ resource "kubernetes_ingress" "mock_ingress_to_get_ip" {
 
         path {
           backend {
-            service_name = "nginx-ingress-nginx-ingress"
+            service_name = "ingress-nginx-controller"
             service_port = 80
           }
           path = "/"
@@ -76,7 +43,7 @@ resource "kubernetes_ingress" "mock_ingress_to_get_ip" {
   }
   wait_for_load_balancer = true
   depends_on = [
-    helm_release.deploy_nginx_ingress
+    helm_release.deploy_nginx_ingress_controller
   ]
 }
 
