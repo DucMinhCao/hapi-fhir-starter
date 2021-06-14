@@ -18,7 +18,7 @@ resource "helm_release" "deploy_kube_prometheus_stack" {
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "16.6.2"
+  version    = "16.7.0"
   namespace  = kubernetes_namespace.monitoring_namespace.metadata[0].name
 
   set {

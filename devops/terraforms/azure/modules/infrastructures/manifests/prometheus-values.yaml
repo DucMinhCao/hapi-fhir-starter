@@ -16,12 +16,14 @@ grafana:
       - secretName: "grafana-ohmydev-asia-tls"
         hosts:
           - "grafana.ohmydev.asia"
-  additionalDataSources:
-    - name: loki-promtail
-      basicAuth: false
-      editable: false
-      jsonData:
-        tlsSkipVerify: true
-      type: loki
-      url: http://loki-stack.monitoring.svc.cluster.local:3100
-      version: 1
+prometheus:
+  additionalScrapeConfigs:
+    - job_name: ingress
+      honor_timestamps: true
+      scrape_interval: 30s
+      scrape_timeout: 30s
+      metrics_path: /metrics
+      scheme: http
+      static_configs:
+        - targets:
+            - ingress-nginx-controller-metrics.nginx.svc.cluster.local:10254

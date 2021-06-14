@@ -20,6 +20,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = "1.11.1"
     }
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "2.12.2"
+    }
   }
 }
 
@@ -39,6 +43,7 @@ variable "kubernetes" {
     client_key             = string
     client_certificate     = string
     cluster_ca_certificate = string
+    kube_config            = string
   })
 }
 

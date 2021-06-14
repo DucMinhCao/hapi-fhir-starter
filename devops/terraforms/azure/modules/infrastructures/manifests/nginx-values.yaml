@@ -27,17 +27,13 @@ controller:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "10254"
-
-      externalIPs: []
-      loadBalancerSourceRanges: []
+        prometheus.io/path: /metrics
       servicePort: 10254
       type: ClusterIP
 
     serviceMonitor:
       enabled: true
-      additionalLabels:
       jobLabel: "app.kubernetes.io/name"
-      namespace: ""
       namespaceSelector:
         any: true
       scrapeInterval: 30s
@@ -45,8 +41,6 @@ controller:
 
     prometheusRule:
       enabled: true
-      additionalLabels: {}
-      # namespace: ""
       rules:
         - alert: NGINXConfigFailed
           expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0

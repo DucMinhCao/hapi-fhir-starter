@@ -50,16 +50,16 @@ module "setup_infrastructures" {
   domain = var.domain
 }
 
-# module "deploy_hapi_demo_application" {
-#   source = "./modules/hapi-demo"
-#   kubernetes = {
-#     host                   = module.aks_cluster.host
-#     client_key             = base64decode(module.aks_cluster.client_key)
-#     client_certificate     = base64decode(module.aks_cluster.client_certificate)
-#     cluster_ca_certificate = base64decode(module.aks_cluster.cluster_ca_certificate)
-#     kube_config            = base64encode(module.aks_cluster.kube_config)
-#   }
-# }
+module "deploy_hapi_demo_application" {
+  source = "./modules/hapi-demo"
+  kubernetes = {
+    host                   = module.aks_cluster.host
+    client_key             = base64decode(module.aks_cluster.client_key)
+    client_certificate     = base64decode(module.aks_cluster.client_certificate)
+    cluster_ca_certificate = base64decode(module.aks_cluster.cluster_ca_certificate)
+    kube_config            = base64encode(module.aks_cluster.kube_config)
+  }
+}
 
 output "ingress_ip_address" {
   value = module.setup_infrastructures.ingress_ip
